@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProcureLink — Campus Procurement</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.09);
+    --border-mid: rgba(0,0,0,0.14);
+    --text: #1a1a18;
+    --muted: #6b6a65;
+    --hint: #9b9a95;
+    --blue: #185fa5;
+    --blue-bg: #e6f1fb;
+    --green: #3b6d11;
+    --green-bg: #eaf3de;
+    --amber: #854f0b;
+    --amber-bg: #faeeda;
+    --red: #a32d2d;
+    --red-bg: #fcebeb;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --surface: #242422;
+      --border: rgba(255,255,255,0.09);
+      --border-mid: rgba(255,255,255,0.14);
+      --text: #e8e7e2;
+      --muted: #9b9a95;
+      --hint: #6b6a65;
+      --blue: #85b7eb;
+      --blue-bg: #042c53;
+      --green: #c0dd97;
+      --green-bg: #173404;
+      --amber: #fac775;
+      --amber-bg: #412402;
+      --red: #f09595;
+      --red-bg: #501313;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .shell { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+  header { border-bottom: 0.5px solid var(--border); padding: 1rem 0; margin-bottom: 2rem; }
+  .header-inner { display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .logo span { color: var(--blue); }
+  .meta { font-size: 12px; color: var(--hint); }
+  .last-update { font-size: 11px; color: var(--hint); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 2px; border-bottom: 0.5px solid var(--border); margin-bottom: 1.5rem; }
+  .tab { padding: 8px 18px; font-size: 13px; cursor: pointer; border: none; background: none; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+  .tab.on { color: var(--text); border-bottom-color: var(--blue); font-weight: 500; }
+  .tab:hover { color: var(--text); }
+  .page { display: none; } .page.on { display: block; }
+
+  /* Metrics */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .metric { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 600; }
+  .metric-sub { font-size: 11px; color: var(--hint); margin-top: 2px; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1rem; }
+  .card-title { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } .metrics { grid-template-columns: 1fr 1fr; } }
+
+  /* Tables */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 7px 10px; font-size: 11px; font-weight: 500; color: var(--muted); border-bottom: 0.5px solid var(--border); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  td { padding: 8px 10px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  /* Badges */
+  .badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 4px; font-weight: 500; white-space: nowrap; }
+  .b-g { background: var(--green-bg); color: var(--green); }
+  .b-b { background: var(--blue-bg); color: var(--blue); }
+  .b-a { background: var(--amber-bg); color: var(--amber); }
+  .b-r { background: var(--red-bg); color: var(--red); }
+
+  /* Search */
+  .search-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .search-row input, .search-row select {
+    font-size: 13px; padding: 7px 10px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+  }
+  .search-row input { flex: 1; min-width: 180px; }
+  .search-row input:focus, .search-row select:focus { border-color: var(--blue); }
+
+  /* Offers accordion */
+  .offers-row { display: none; }
+  .offers-row.open { display: table-row; }
+  .offers-inner { padding: 8px 10px 12px; }
+  .offer-list { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+  .offer-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; }
+  .offer-item.best { border-color: var(--green); background: var(--green-bg); }
+  .offer-shop { color: var(--muted); }
+  .offer-price { font-weight: 500; }
+
+  /* Error state */
+  .err-msg { font-size: 12px; color: var(--red); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border-mid); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Loading overlay */
+  #loading { text-align: center; padding: 3rem; color: var(--muted); font-size: 13px; }
+  #app { display: none; }
+
+  .savings-pct { color: var(--green); font-weight: 500; }
+  .trend-up { color: var(--red); }
+  .trend-dn { color: var(--green); }
+  .expand-btn { cursor: pointer; color: var(--blue); font-size: 11px; user-select: none; }
+  .expand-btn:hover { text-decoration: underline; }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot-g { background: #63c520; }
+  .dot-r { background: #e24b4a; }
+  .dot-a { background: #ef9f27; }
+
+  .score-bar { display: inline-flex; align-items: center; gap: 6px; }
+  .bar-bg { width: 60px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="shell header-inner">
+    <div>
+      <div class="logo">Procure<span>Link</span></div>
+      <div class="meta">Campus Procurement Analysis · HSBI Bielefeld</div>
+    </div>
+    <div id="updateInfo" class="last-update">Loading...</div>
+  </div>
+</header>
+
+<div class="shell">
+  <div id="loading"><span class="spinner"></span> Fetching price data...</div>
+  <div id="app">
+    <div class="tabs">
+      <button class="tab on" onclick="tab('overview',this)">Overview</button>
+      <button class="tab" onclick="tab('compare',this)">Price comparison</button>
+      <button class="tab" onclick="tab('analysis',this)">Analysis</button>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div id="page-overview" class="page on">
+      <div class="metrics" id="kpi-row"></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Top savings opportunities</div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Product</th><th>Best price</th><th>Saving vs avg</th></tr></thead>
+            <tbody id="savings-table"></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Categories covered</div>
+          <div style="position:relative;height:200px"><canvas id="catChart" role="img" aria-label="Pie chart of SKU distribution by category">SKU category breakdown.</canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE -->
+    <div id="page-compare" class="page">
+      <div class="search-row">
+        <input type="text" id="searchQ" placeholder="Product name..." oninput="renderCompare()">
+        <select id="catFilter" onchange="renderCompare()">
+          <option value="">All categories</option>
+        </select>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Product</th><th>Category</th><th>Best price</th><th>Best shop</th><th>Offers</th><th></th></tr></thead>
+          <tbody id="compare-body"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ANALYSIS -->
+    <div id="page-analysis" class="page">
+      <div class="metrics" id="analysis-kpi"></div>
+      <div class="card">
+        <div class="card-title">Price distribution by category (best offers)</div>
+        <div style="position:relative;height:240px"><canvas id="barChart" role="img" aria-label="Bar chart of best prices per category">Best price per category.</canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Offer count per product — vendor competition</div>
+        <div style="position:relative;height:200px"><canvas id="offerCountChart" role="img" aria-label="Bar chart showing number of competing offers per product">Offer counts per product.</canvas></div>
+      </div>
+      <p style="font-size:12px;color:var(--hint);margin-top:0.5rem">
+        Data source: <a href="https://geizhals.de" target="_blank">Geizhals.de</a> · 
+        prices reflect public market rates, not B2B contract pricing · 
+        use as benchmark only
+      </p>
+    </div>
+  </div><!-- #app -->
+</div>
+
+<script>
+let DATA = null;
+
+/* ── Fetch data.json ── */
+async function loadData() {
+  try {
+    const res = await fetch("data.json");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    DATA = await res.json();
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    const d = new Date(DATA.generated_at);
+    document.getElementById("updateInfo").textContent =
+      "Last crawl: " + d.toLocaleString("de-DE") + " · " + DATA.product_count + " SKUs";
+    render();
+  } catch(e) {
+    document.getElementById("loading").innerHTML =
+      '<span style="color:var(--red)">Could not load data.json — run crawler.py first.</span>' +
+      '<br><span style="font-size:12px;color:var(--hint);margin-top:6px;display:block">' + e.message + '</span>';
+  }
+}
+
+/* ── Tab switching ── */
+function tab(id, el) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+  document.getElementById("page-" + id).classList.add("on");
+  el.classList.add("on");
+}
+
+/* ── Helpers ── */
+function fmt(v) { return v != null ? "€" + v.toFixed(2) : "—"; }
+
+function avgPrice(product) {
+  if (!product.offers || product.offers.length === 0) return null;
+  const sum = product.offers.reduce((a, o) => a + o.price, 0);
+  return sum / product.offers.length;
+}
+
+function savingVsAvg(product) {
+  const avg = avgPrice(product);
+  if (!avg || !product.best_price) return null;
+  return Math.round((1 - product.best_price / avg) * 100);
+}
+
+/* ── Render all ── */
+function render() {
+  renderKPI();
+  renderSavings();
+  renderCatChart();
+  renderCompare();
+  renderAnalysis();
+}
+
+/* ── KPI row ── */
+function renderKPI() {
+  const results = DATA.results;
+  const ok = results.filter(r => r.best_price);
+  const totalOffers = results.reduce((a, r) => a + r.offers.length, 0);
+  const cats = [...new Set(results.map(r => r.category))];
+  const savings = results.map(savingVsAvg).filter(Boolean);
+  const avgSaving = savings.length ? (savings.reduce((a,b)=>a+b,0)/savings.length).toFixed(1) : "—";
+
+  document.getElementById("kpi-row").innerHTML = [
+    ["Tracked SKUs", ok.length + " / " + results.length, results.length - ok.length + " missing data"],
+    ["Price offers", totalOffers, "across all products"],
+    ["Categories", cats.length, cats.join(", ")],
+    ["Avg. saving vs mean", avgSaving + "%", "best price vs avg offer"],
+  ].map(([label, val, sub]) => `
+    <div class="metric">
+      <div class="metric-label">${label}</div>
+      <div class="metric-value">${val}</div>
+      <div class="metric-sub">${sub}</div>
+    </div>`).join("");
+}
+
+/* ── Savings table ── */
+function renderSavings() {
+  const sorted = DATA.results
+    .filter(r => r.best_price)
+    .map(r => ({ ...r, saving: savingVsAvg(r) }))
+    .sort((a, b) => (b.saving || 0) - (a.saving || 0))
+    .slice(0, 6);
+
+  document.getElementById("savings-table").innerHTML = sorted.map(r => `
+    <tr>
+      <td>${r.name}</td>
+      <td style="font-weight:500;color:var(--green)">${fmt(r.best_price)}</td>
+      <td>${r.saving ? '<span class="savings-pct">−' + r.saving + '%</span>' : "—"}</td>
+    </tr>`).join("");
+}
+
+/* ── Category pie chart ── */
+function renderCatChart() {
+  const cats = {};
+  DATA.results.forEach(r => { cats[r.category] = (cats[r.category] || 0) + 1; });
+  const labels = Object.keys(cats);
+  const colors = ["#378ADD","#3B6D11","#854F0B","#A32D2D","#185FA5"];
+  new Chart(document.getElementById("catChart"), {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{ data: labels.map(l => cats[l]), backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "right", labels: { font: { size: 11 }, boxWidth: 10, color: getComputedStyle(document.documentElement).getPropertyValue('--text') || '#1a1a18' } } }
+    }
+  });
+}
+
+/* ── Compare tab ── */
+function renderCompare() {
+  if (!DATA) return;
+  const q = document.getElementById("searchQ").value.toLowerCase();
+  const cat = document.getElementById("catFilter").value;
+
+  // Populate category filter
+  const cats = [...new Set(DATA.results.map(r => r.category))];
+  const sel = document.getElementById("catFilter");
+  if (sel.options.length === 1) {
+    cats.forEach(c => { const o = document.createElement("option"); o.value = o.text = c; sel.appendChild(o); });
+  }
+
+  const filtered = DATA.results.filter(r =>
+    (!q || r.name.toLowerCase().includes(q)) &&
+    (!cat || r.category === cat)
+  );
+
+  document.getElementById("compare-body").innerHTML = filtered.map((r, i) => {
+    const saving = savingVsAvg(r);
+    const offerCount = r.offers.length;
+    return `
+      <tr>
+        <td>${r.name}</td>
+        <td><span class="badge b-b">${r.category}</span></td>
+        <td style="font-weight:500;color:var(--green)">${fmt(r.best_price)}</td>
+        <td>${r.best_shop || "—"}</td>
+        <td>${offerCount ? offerCount + " shops" : '<span class="err-msg">no data</span>'}</td>
+        <td><span class="expand-btn" onclick="toggleOffers('offers-${i}',this)">${offerCount ? "▸ details" : ""}</span></td>
+      </tr>
+      <tr class="offers-row" id="offers-${i}">
+        <td colspan="6">
+          <div class="offers-inner">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">All offers for <strong>${r.name}</strong></div>
+            <div class="offer-list">
+              ${r.offers.map((o, j) => `
+                <div class="offer-item ${j === 0 ? 'best' : ''}">
+                  <span class="offer-shop">${j === 0 ? "⭐ " : ""}${o.shop}</span>
+                  <span class="offer-price">${fmt(o.price)}</span>
+                </div>`).join("")}
+            </div>
+            ${r.error ? '<div class="err-msg" style="margin-top:6px">Note: ' + r.error + '</div>' : ""}
+          </div>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+function toggleOffers(id, btn) {
+  const row = document.getElementById(id);
+  const open = row.classList.toggle("open");
+  btn.textContent = open ? "▾ close" : "▸ details";
+}
+
+/* ── Analysis charts ── */
+function renderAnalysis() {
+  const results = DATA.results.filter(r => r.best_price);
+
+  // KPI
+  const maxSaving = Math.max(...results.map(r => savingVsAvg(r) || 0));
+  const bestProduct = results.find(r => savingVsAvg(r) === maxSaving);
+  const avgOffers = (results.reduce((a, r) => a + r.offers.length, 0) / results.length).toFixed(1);
+  const noData = DATA.results.filter(r => !r.best_price).length;
+
+  document.getElementById("analysis-kpi").innerHTML = [
+    ["Best single saving", maxSaving + "%", bestProduct ? bestProduct.name : ""],
+    ["Avg. competing offers", avgOffers, "per product"],
+    ["Data gaps", noData, "products with no price data"],
+  ].map(([label, val, sub]) => `
+    <div class="metric">
+      <div class="metric-label">${label}</div>
+      <div class="metric-value">${val}</div>
+      <div class="metric-sub">${sub}</div>
+    </div>`).join("");
+
+  // Bar chart — best price per product
+  const labels = results.map(r => r.name.length > 22 ? r.name.slice(0, 22) + "…" : r.name);
+  new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Best price (€)",
+        data: results.map(r => r.best_price),
+        backgroundColor: "rgba(55,138,221,0.65)",
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 40 } },
+        y: { ticks: { callback: v => "€" + v } }
+      }
+    }
+  });
+
+  // Offer count chart
+  new Chart(document.getElementById("offerCountChart"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Number of offers",
+        data: results.map(r => r.offers.length),
+        backgroundColor: "rgba(59,109,17,0.6)",
+        borderRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 40 } },
+        y: { ticks: { stepSize: 1 } }
+      }
+    }
+  });
+}
+
+loadData();
+</script>
+</body>
+</html>

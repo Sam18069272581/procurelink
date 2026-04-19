@@ -1,0 +1,40 @@
+name: ProcureLink — scheduled crawl
+
+on:
+  schedule:
+    # Every Monday at 06:00 UTC (08:00 Berlin time)
+    - cron: "0 6 * * 1"
+    # First day of each month at 05:00 UTC (quarterly fallback)
+    - cron: "0 5 1 * *"
+  workflow_dispatch:   # allow manual trigger from GitHub UI
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit data.json back
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Run crawler
+        run: python crawler.py
+
+      - name: Commit updated data.json
+        run: |
+          git config user.name  "procurelink-bot"
+          git config user.email "bot@procurelink"
+          git add data.json
+          # Only commit if data.json actually changed
+          git diff --cached --quiet || git commit -m "chore: update price data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

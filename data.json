@@ -1,0 +1,136 @@
+{
+  "generated_at": "2026-04-19T20:41:00Z",
+  "source": "geizhals.de (demo seed data)",
+  "product_count": 8,
+  "results": [
+    {
+      "sku": "SKU-001",
+      "name": "Druckerpapier A4 80g (500 Bl.)",
+      "category": "Büromaterial",
+      "offers": [
+        {"shop": "Mercateo", "price": 3.20, "url": "https://geizhals.de"},
+        {"shop": "büro-discount.de", "price": 3.49, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 3.65, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 3.85, "url": "https://geizhals.de"},
+        {"shop": "Staples DE", "price": 4.10, "url": "https://geizhals.de"}
+      ],
+      "best_price": 3.20,
+      "best_shop": "Mercateo",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-002",
+      "name": "Whiteboard-Marker Set 10er",
+      "category": "Büromaterial",
+      "offers": [
+        {"shop": "Mercateo", "price": 8.90, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 9.15, "url": "https://geizhals.de"},
+        {"shop": "Office Discount", "price": 10.20, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 10.80, "url": "https://geizhals.de"}
+      ],
+      "best_price": 8.90,
+      "best_shop": "Mercateo",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-003",
+      "name": "Toner HP LaserJet CF226A",
+      "category": "IT & Elektronik",
+      "offers": [
+        {"shop": "Amazon Business", "price": 67.50, "url": "https://geizhals.de"},
+        {"shop": "Mercateo", "price": 71.00, "url": "https://geizhals.de"},
+        {"shop": "Conrad", "price": 75.90, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 78.50, "url": "https://geizhals.de"},
+        {"shop": "Cyberport", "price": 82.00, "url": "https://geizhals.de"}
+      ],
+      "best_price": 67.50,
+      "best_shop": "Amazon Business",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-004",
+      "name": "USB-Hub 4-Port USB-C",
+      "category": "IT & Elektronik",
+      "offers": [
+        {"shop": "Mercateo", "price": 17.80, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 18.50, "url": "https://geizhals.de"},
+        {"shop": "Conrad", "price": 19.90, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 21.00, "url": "https://geizhals.de"}
+      ],
+      "best_price": 17.80,
+      "best_shop": "Mercateo",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-005",
+      "name": "Aktenvernichter Partikelschnitt B5",
+      "category": "Büromaterial",
+      "offers": [
+        {"shop": "Mercateo", "price": 152.00, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 161.00, "url": "https://geizhals.de"},
+        {"shop": "Office Discount", "price": 168.00, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 169.00, "url": "https://geizhals.de"}
+      ],
+      "best_price": 152.00,
+      "best_shop": "Mercateo",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-006",
+      "name": "Reinigungstücher Bildschirm 100er",
+      "category": "Reinigung",
+      "offers": [
+        {"shop": "Metro.de", "price": 5.90, "url": "https://geizhals.de"},
+        {"shop": "Mercateo", "price": 6.40, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 6.80, "url": "https://geizhals.de"}
+      ],
+      "best_price": 5.90,
+      "best_shop": "Metro.de",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-007",
+      "name": "HDMI-Kabel 2m 4K",
+      "category": "IT & Elektronik",
+      "offers": [
+        {"shop": "Amazon Business", "price": 8.99, "url": "https://geizhals.de"},
+        {"shop": "Mercateo", "price": 9.20, "url": "https://geizhals.de"},
+        {"shop": "Conrad", "price": 10.50, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 11.50, "url": "https://geizhals.de"}
+      ],
+      "best_price": 8.99,
+      "best_shop": "Amazon Business",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    },
+    {
+      "sku": "SKU-008",
+      "name": "Kugelschreiber Blau 50er Pack",
+      "category": "Büromaterial",
+      "offers": [
+        {"shop": "büro-discount.de", "price": 7.20, "url": "https://geizhals.de"},
+        {"shop": "Mercateo", "price": 7.90, "url": "https://geizhals.de"},
+        {"shop": "Amazon Business", "price": 8.40, "url": "https://geizhals.de"},
+        {"shop": "Metro.de", "price": 9.10, "url": "https://geizhals.de"}
+      ],
+      "best_price": 7.20,
+      "best_shop": "büro-discount.de",
+      "scraped_at": "2026-04-19T20:41:00Z",
+      "source": "seed",
+      "error": null
+    }
+  ]
+}
