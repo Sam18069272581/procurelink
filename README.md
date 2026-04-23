@@ -1,5 +1,5 @@
 ProcureLink
-ProcureLink is a campus procurement intelligence tool designed for HSBI (Hochschule Bielefeld). It automates price benchmarking for office supplies and IT hardware by scraping Geizhals.de, providing procurement teams with data-driven insights through an interactive dashboard.
+ProcureLink is a campus procurement intelligence tool designed for University. It automates price benchmarking for office supplies and IT hardware by scraping Geizhals.de, providing procurement teams with data-driven insights through an interactive dashboard.
 
 🚀 Quick Start
 Bash
