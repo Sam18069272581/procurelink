@@ -1,48 +1,33 @@
 ProcureLink
-ProcureLink 是专为 HSBI (Hochschule Bielefeld) 校园采购设计的价格基准分析工具。它能够自动抓取 Geizhals.de 上的办公用品及 IT 设备价格，并生成多供应商的价格对比可视化图表。
+ProcureLink is a campus procurement intelligence tool designed for HSBI (Hochschule Bielefeld). It automates price benchmarking for office supplies and IT hardware by scraping Geizhals.de, providing procurement teams with data-driven insights through an interactive dashboard.
 
-🚀 快速开始
+🚀 Quick Start
 Bash
-# 安装必要依赖
-pip install requests beautifulsoup4 lxml
+# Install dependencies
+pip install -r requirements.txt
 
-# 运行爬虫生成最新的 data.json
+# Run the crawler to update price data
 python crawler.py
 
-# 在浏览器中打开 index.html 即可查看可视化面板
-🌐 部署至 GitHub Pages (免费且自动更新)
-将代码仓库推送至 GitHub。
-
-进入仓库 Settings → Pages → Source，选择 Deploy from branch (main, / root)。
-
-GitHub Pages 将自动通过 index.html 读取同目录下的 data.json 数据。
-
-预设的 GitHub Actions (.github/workflows/crawl.yml) 会在每周一北京时间 15:00（柏林时间 08:00）自动运行爬虫并更新数据 。
-
-📂 文件结构
+# Launch the local preview server
+python serve.py
+📂 File Structure
 Plaintext
 procurelink/
-├── index.html              # 前端展示页面 (读取 data.json)
-├── crawler.py              # Python 爬虫逻辑 (输出 data.json) 
-├── data.json               # 爬虫生成的结构化价格数据
-├── requirements.txt        # 项目依赖清单
-└── .github/
-    └── workflows/
-        └── crawl.yml       # GitHub Actions 自动化脚本 
-📊 数据 Schema 说明 (data.json)
-项目使用标准 JSON 格式存储数据，其核心结构如下：
 
-JSON
-{
-  "generated_at": "2026-04-19T20:41:00Z", // 最后更新时间
-  "product_count": 8,                   // 监控的 SKU 数量
-  "results": [
-    {
-      "sku": "SKU-001",                 // 唯一识别码 
-      "name": "Druckerpapier A4 80g",   // 商品名称 
-      "best_price": 3.20,               // 全网最低价
-      "best_shop": "Mercateo",          // 最优供应商
-      "offers": [...]                   // 详细报价列表
-    }
-  ]
-}
+├── .github/workflows/
+│   └── crawl.yml          # GitHub Actions: Automated weekly price updates
+│
+├── crawler.py             # Core Scraper: Python logic for data acquisition
+│
+├── data.json              # Data Store: Structured results in JSON format
+│
+├── index.html             # Dashboard: Chart.js visualization interface
+│
+├── serve.py               # Utility: Local development server
+│
+└── requirements.txt       # Dependencies: List of required Python packages
+⚙️ Automation & Deployment
+GitHub Actions: The workflow is configured to run every Monday at 08:00 (Berlin Time). It scrapes the latest prices and automatically commits changes back to the repository.
+
+GitHub Pages: The project is designed to be hosted directly via GitHub Pages. Since it uses a "Git-as-a-DB" architecture, no external database or backend server is required.
